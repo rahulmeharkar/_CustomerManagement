@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<button class="AddUser" onclick="myFunction()">Add Customer</button>
+<div id="AddUserForm" style="display:none">@Html.Partial("~/Views/Home/AddCustomer.cshtml")</div>
+
+<script>
+        function myFunction() {
+            document.getElementById("AddUserForm")
+}
+</script>
