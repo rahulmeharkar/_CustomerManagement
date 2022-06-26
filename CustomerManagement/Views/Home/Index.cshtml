@@ -1,13 +1,62 @@
 ﻿
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AfterLayout.cshtml";
 }
+<br>
+<table class="table-bordered" bgcolor="white">
+    <thead>
+    <tr>
+        <th class="table-bordered">ID</th>
+        <th class="table-bordered">Name</th>
+        <th class="table-bordered">DOB</th>
+        <th class="table-bordered">Address</th>
+        <th class="table-bordered">Phone</th>
+        <th class="table-bordered">Action</th>
+    </tr>
+    </thead>
+    <tbody id="custdata"></tbody>
+</table>
 
-<button class="AddUser" onclick="myFunction()">Add Customer</button>
-<div id="AddUserForm" style="display:none">@Html.Partial("~/Views/Home/AddCustomer.cshtml")</div>
 
 <script>
-        function myFunction() {
-            document.getElementById("AddUserForm")
-}
+    $(document).ready(function () {
+        $.ajax({
+            url: "https://localhost:44357/Home/CustomerList",
+            type: "GET",
+            dataType: 'json',
+            cache: true,
+            success: function (response) {
+                $.each(response, function (key, value) {
+                    $('#custdata').append("<tr>\
+                                        <td>"+ value.customer_id + "</td>\
+                                        <td>"+ value.customer_name + "</td>\
+                                        <td>"+ value.customer_phone + "</td>\
+                                        <td>"+ value.customer_address + "</td>\
+                                        <td>"+ value.customer_dob + "</td>\
+                                        <td><button onclick="+ editCust(value.customer_id) + ">Edit</button>&nbsp;&nbsp;<button onclick=" + deleteCust(value.customer_id )+">Delete</button></td>\
+                                        </tr>");
+                })
+            }
+
+        });
+    });
+    function editCust(val) {
+
+    }
+    function deleteCust(id) {
+        var result = confirm("Data Will Permanantly Deleted");
+        if (result) {
+            $.ajax({
+                url: "https://localhost:44357/Home/DeleteCustomer",
+                data: JSON.stringify({ id: id }),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
 </script>

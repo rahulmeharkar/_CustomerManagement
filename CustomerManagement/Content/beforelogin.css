@@ -1,0 +1,22 @@
+﻿body, html {
+    margin: 0;
+    /* The image used */
+    background-image: url('pexels-fauxels-3183132.jpg');
+    /* Full height */
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.parent {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.child {
+    width: 250px;
+    height: 250px;
+}

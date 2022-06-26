@@ -64,12 +64,12 @@ namespace CustomerManagement.Controllers
             return RedirectToAction("SignIn", "Home");
         }
 
-        [Authorize]
-        [HttpGet]
-        public ActionResult AddCustomer()
-        {
-            return PartialView();
-        }
+        //[Authorize]
+        //[HttpGet]
+        //public ActionResult AddCustomer()
+        //{
+        //    return PartialView();
+        //}
 
         [Authorize]
         [HttpPost]
@@ -80,14 +80,39 @@ namespace CustomerManagement.Controllers
                 int i = customerAction.Add(mod);
                 if(i>=1)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return Content("Added Succesfully");
                 }
-
-                ViewBag.msg = "Not Able To Add Customer";
-                return View();
+                return Content("Failed");
             }
-            ViewBag.msg = "Model not valid";
-            return View();
+            return Content("Invalid Input");
+        }
+
+        [Authorize]
+        [HttpPut]
+        public ActionResult UpdateCustomer(CustomerViewModel _customerViewModel)
+        {
+            if(customerAction.UpdateCustomer(_customerViewModel) >= 1)
+            {
+                return Content("Update Succesfully");
+            }
+            else
+            {
+                return Content("Failed");
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult DeleteCustomer(int id)
+        {
+            if (customerAction.DeleteCustomer(id) >= 1)
+            {
+                return Content("Deleted Succesfully");
+            }
+            else
+            {
+                return Content("Failed");
+            }
         }
     }
 }

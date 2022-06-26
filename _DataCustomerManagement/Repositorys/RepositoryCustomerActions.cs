@@ -38,6 +38,28 @@ namespace _DataCustomerManagement.Repositorys
             }
         }
 
+        public int DeleteCustomer(int customerid)
+        {
+            try 
+            {
+                var customer = dbContextCustomerManagement.Customers.Where(x => x.customer_id == customerid).First();
+                if(customer!=null)
+                {
+                    dbContextCustomerManagement.Customers.Remove(customer);
+                    return dbContextCustomerManagement.SaveChanges();
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return 0;
+            }
+        }
+
         public IEnumerable<CustomerModel> GetAll()
         {
            return dbContextCustomerManagement.Customers.ToList();
@@ -45,15 +67,48 @@ namespace _DataCustomerManagement.Repositorys
 
         public bool SignInCheck(UserViewModel userModel)
         {
-            bool isvalid = dbContextCustomerManagement.Users.Any(x => x.user_email == userModel.user_email && x.user_password == userModel.user_password);
-            if (isvalid == true)
+            try
             {
-
-                return true;
+                bool isvalid = dbContextCustomerManagement.Users.Any(x => x.user_email == userModel.user_email && x.user_password == userModel.user_password);
+                if (isvalid == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch(Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
+            }
+        }
+
+        public int UpdateCustomer(CustomerViewModel _customerViewModel)
+        {
+            try
+            {
+                var customerModel = dbContextCustomerManagement.Customers.Where(x => x.customer_id == _customerViewModel.customer_id).First();
+
+                if (customerModel != null)
+                {
+                    customerModel.customer_name = _customerViewModel.customer_name;
+                    customerModel.customer_dob = _customerViewModel.customer_dob;
+                    customerModel.customer_address = _customerViewModel.customer_address;
+                    customerModel.customer_phone = _customerViewModel.customer_phone;
+                    return dbContextCustomerManagement.SaveChanges();
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return 0;
             }
         }
     }

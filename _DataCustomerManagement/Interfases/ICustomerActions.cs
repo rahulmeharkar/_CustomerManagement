@@ -8,5 +8,8 @@ namespace _DataCustomerManagement.Interfases
         IEnumerable<CustomerModel> GetAll();
         int Add(CustomerViewModel _cutomers);
         bool SignInCheck(UserViewModel userModel);
+        int UpdateCustomer(CustomerViewModel _customerViewModel);
+
+        int DeleteCustomer(int customerid);
     }
 }
