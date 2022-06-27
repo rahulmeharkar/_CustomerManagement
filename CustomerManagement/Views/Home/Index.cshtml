@@ -1,62 +1,133 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_AfterLayout.cshtml";
 }
 <br>
-<table class="table-bordered" bgcolor="white">
-    <thead>
-    <tr>
-        <th class="table-bordered">ID</th>
-        <th class="table-bordered">Name</th>
-        <th class="table-bordered">DOB</th>
-        <th class="table-bordered">Address</th>
-        <th class="table-bordered">Phone</th>
-        <th class="table-bordered">Action</th>
-    </tr>
-    </thead>
-    <tbody id="custdata"></tbody>
-</table>
+<div id="example">
+    <div id="grid"></div>
 
-
-<script>
+    <script>
     $(document).ready(function () {
-        $.ajax({
-            url: "https://localhost:44357/Home/CustomerList",
-            type: "GET",
-            dataType: 'json',
-            cache: true,
-            success: function (response) {
-                $.each(response, function (key, value) {
-                    $('#custdata').append("<tr>\
-                                        <td>"+ value.customer_id + "</td>\
-                                        <td>"+ value.customer_name + "</td>\
-                                        <td>"+ value.customer_phone + "</td>\
-                                        <td>"+ value.customer_address + "</td>\
-                                        <td>"+ value.customer_dob + "</td>\
-                                        <td><button onclick="+ editCust(value.customer_id) + ">Edit</button>&nbsp;&nbsp;<button onclick=" + deleteCust(value.customer_id )+">Delete</button></td>\
-                                        </tr>");
-                })
-            }
-
-        });
-    });
-    function editCust(val) {
-
-    }
-    function deleteCust(id) {
-        var result = confirm("Data Will Permanantly Deleted");
-        if (result) {
-            $.ajax({
-                url: "https://localhost:44357/Home/DeleteCustomer",
-                data: JSON.stringify({ id: id }),
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    alert(result);
-                }
+        var crudServiceBaseUrl = "https://localhost:44348/",
+            dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: crudServiceBaseUrl + "api/listallcustomer",
+                        dataType: "json"
+                    },
+                    update: {
+                        url: crudServiceBaseUrl + "api/updatecustomer",
+                        type: "PUT",
+                        dataType: "json",
+                        complete: function (e) {
+                            if (e.status == 200) {
+                                $("#grid").data("kendoGrid").dataSource.read();
+                                $("#notification").kendoNotification({
+                                    position: {
+                                        top: 30
+                                    },
+                                    autoHideAfter: 3000
+                                });
+                                $("#notification").getKendoNotification().show("Succesfully Updated Record");
+                            }
+                            else {
+                                $("#notification").kendoNotification({
+                                    position: {
+                                        top: 30
+                                    },
+                                    autoHideAfter: 3000
+                                });
+                                $("#notification").getKendoNotification().show("Failed");
+                            }
+                        }
+                    },
+                    destroy: {
+                        url: crudServiceBaseUrl + "api/deletecustomer",
+                        dataType: "json",
+                        type: "DELETE",
+                        complete: function (e) {
+                            $("#grid").data("kendoGrid").dataSource.read();
+                            $("#notification").kendoNotification({
+                                position: {
+                                    top: 30
+                                },
+                                autoHideAfter: 3000
+                            });
+                            $("#notification").getKendoNotification().show("Succesfully Deleted");
+                        }
+                    },
+                    create: {
+                        url: crudServiceBaseUrl + "api/addcustomerrecord",
+                        dataType: "json",
+                        type: "POST",
+                        complete: function (e) {
+                            if (e.status == 200) {
+                                $("#grid").data("kendoGrid").dataSource.read();
+                                $("#notification").kendoNotification({
+                                    position: {
+                                        top: 30
+                                    },
+                                    autoHideAfter: 3000
+                                });
+                                $("#notification").getKendoNotification().show("Succesfully Created/Inserted Record");
+                            }
+                            else {
+                                $("#notification").kendoNotification({
+                                    position: {
+                                        top: 30
+                                    },
+                                    autoHideAfter: 3000
+                                });
+                                $("#notification").getKendoNotification().show("Failed");
+                            }
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: JSON.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 20,
+                schema: {
+                    model: {
+                        id: "customer_id",
+                        fields: {
+                            customer_id: { editable: false, nullable: true},
+                            customer_name: {
+                                validation: {
+                                    required: true,
+                                    namevalidation: function (input) {
+                                        if (input.is("[name='emp_name']") && input.val() != "") {
+                                            input.attr("data-namevalidation-msg", "Name should be start with capital letter");
+                                            return /^[A-Z]/.test(input.val());
+                                        }
+                                        return true;
+                                    }
+                                }
+                            },
+                            customer_address: { validation: { required: true } },
+                            customer_phone: { validation: { required: true } },
+                            customer_dob: { type:"Date", validation: { required: true }},
+                            }
+                        }
+                    }
+                });
+            $("#grid").kendoGrid({
+                dataSource: dataSource,
+                pageable: true,
+                height: 550,
+                toolbar: ["create", "search"],
+                columns: [
+                    { field: "customer_id", title: "Id", width: "120px" },
+                    { field: "customer_name", title: "Name", width: "120px" },
+                    { field: "customer_address", title: "Address", width: "120px" },
+                    { field: "customer_phone", title: "Mobile Number", width: "120px" },
+                    { field: "customer_dob", title: "DOB", width: "120px" },
+                    { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }],
+                editable: "popup"
             });
-        }
-    }
-</script>
+        });
+    </script>
+</div>

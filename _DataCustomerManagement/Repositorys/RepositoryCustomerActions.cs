@@ -11,10 +11,12 @@ namespace _DataCustomerManagement.Repositorys
     public class RepositoryCustomerActions : ICustomerActions
     {
         private readonly DbContextCustomerManagement dbContextCustomerManagement;
-        public RepositoryCustomerActions(DbContextCustomerManagement _dbContextCustomerManagement)
+
+        public RepositoryCustomerActions()
         {
-            dbContextCustomerManagement = _dbContextCustomerManagement;
+            dbContextCustomerManagement = new DbContextCustomerManagement();
         }
+
         public int Add(CustomerViewModel _cutomers)
         {
             try

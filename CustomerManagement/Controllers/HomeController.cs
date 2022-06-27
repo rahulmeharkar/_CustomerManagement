@@ -1,5 +1,7 @@
 ﻿using _DataCustomerManagement.Interfases;
 using _DataCustomerManagement.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,25 +75,23 @@ namespace CustomerManagement.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult AddCustomer(CustomerViewModel mod)
+        public ActionResult AddCustomer(JObject obj)
         {
-            if (ModelState.IsValid)
-            {
-                int i = customerAction.Add(mod);
+            var s = JsonConvert.DeserializeObject<List<CustomerViewModel>>(obj["models"].ToString());
+            int i = customerAction.Add(s[0]);
                 if(i>=1)
                 {
                     return Content("Added Succesfully");
                 }
                 return Content("Failed");
-            }
-            return Content("Invalid Input");
         }
 
         [Authorize]
         [HttpPut]
-        public ActionResult UpdateCustomer(CustomerViewModel _customerViewModel)
+        public ActionResult UpdateCustomer(JObject obj)
         {
-            if(customerAction.UpdateCustomer(_customerViewModel) >= 1)
+            var s = JsonConvert.DeserializeObject<List<CustomerViewModel>>(obj["models"].ToString());
+            if (customerAction.UpdateCustomer(s[0]) >= 1)
             {
                 return Content("Update Succesfully");
             }
@@ -102,10 +102,11 @@ namespace CustomerManagement.Controllers
         }
 
         [Authorize]
-        [HttpPost]
-        public ActionResult DeleteCustomer(int id)
+        [HttpDelete]
+        public ActionResult DeleteCustomer(JObject obj)
         {
-            if (customerAction.DeleteCustomer(id) >= 1)
+            var s = JsonConvert.DeserializeObject<List<CustomerViewModel>>(obj["models"].ToString());
+            if (customerAction.DeleteCustomer(s[0].customer_id) >= 1)
             {
                 return Content("Deleted Succesfully");
             }
